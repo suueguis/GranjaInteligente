@@ -1,17 +1,37 @@
 # granja/facade/granja_facade.py
-from granja.patrones.factory import crear_animal
-from granja.patrones.builder import AnimalBuilder
+from granja.patrones.factory import FactoryAnimales
+from granja.patrones.strategy import EstrategiaVerano
 from granja.patrones.singleton import AlimentadorGlobal
+from granja.patrones.command import DispensarCommand
+from granja.patrones.observer import Subject, AlertObserver
+from granja.animales.animal_base import Animal
 
 class GranjaFacade:
     def __init__(self):
-        # Placeholders: subsistemas se conectarán cuando existan.
-        self._ready = False
+        # Inicializa los subsistemas
+        self.factory = FactoryAnimales()
+        self.estrategia = EstrategiaVerano()
+        self.alimentador = AlimentadorGlobal.get_instance()
+        self.sensor = Subject()
+        self.alerta = AlertObserver()
+        self.sensor.attach(self.alerta)
 
     def simular_dia(self):
-        # Demo básico que siempre funciona 
-        print("=== Simulación de la Granja — Facade (esqueleto) ===")
-        print("1) Chequeo sensores: OK (simulado)")
-        print("2) Decisión de ración: OK (simulado)")
-        print("3) Dispensar alimento: OK (simulado)")
-        print("4) Fin de la simulación")
+        print("Iniciando simulación del día en la granja...")
+
+        # Crear un animal con el Factory
+        vaca = self.factory.crear_animal("vaca", id=1, peso=230.0)
+        print(f"Animal creado: {vaca}")
+
+        # Calcular la ración usando la Strategy
+        racion = self.estrategia.calcular_racion(vaca.peso)
+        print(f"Ración calculada: {racion:.2f} kg")
+
+        # Dispensar alimento con Command
+        comando = DispensarCommand(self.alimentador, racion)
+        comando.execute()
+
+        # Notificar sensores con Observer
+        self.sensor.notify("Alimentación completada correctamente")
+
+        print("Fin de la simulación.")

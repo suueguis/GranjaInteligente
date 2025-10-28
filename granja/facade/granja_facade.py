@@ -1,4 +1,8 @@
 # granja/facade/granja_facade.py
+from granja.patrones.factory import crear_animal
+from granja.patrones.builder import AnimalBuilder
+from granja.patrones.singleton import AlimentadorGlobal
+
 class GranjaFacade:
     def __init__(self):
         # Placeholders: subsistemas se conectarán cuando existan.
